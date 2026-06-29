@@ -1,0 +1,55 @@
+# ACORDO DE PILOTO - 15 DIAS
+
+## PARTES ENVOLVIDAS
+**Desenvolvedor:** Marco Antonio Savala Beltrame  
+**Empresa:** Multi Dados ERP  
+**Cliente Piloto:** [Nome do Supermercado]
+
+## OBJETO
+Implementação de módulo de Inteligência de Inventários por período de 15 dias,
+sem custos, para validação de funcionalidades e resultados.
+
+## ESCOPO
+✅ Implementação em 1 filial ou 1 categoria de produtos  
+✅ Dashboard web interativo  
+✅ Relatórios automáticos diários  
+✅ Suporte técnico durante o piloto  
+✅ Treinamento de 1 hora para equipe
+
+## CONFIDENCIALIDADE
+O Desenvolvedor compromete-se a:
+- Não divulgar dados do cliente
+- Usar informações apenas para fins do piloto
+- Excluir dados após término do piloto
+
+## ACESSO A DADOS
+- Acesso somente leitura (SELECT) às tabelas do ERP
+- Sem permissão de escrita, alteração ou exclusão
+- Conexão via views SQL ou API
+
+## PROPRIEDADE INTELECTUAL
+O código e dashboard são propriedade do Desenvolvedor.
+A Multi Dados obtém licença de comercialização após contrato.
+
+## DURAÇÃO
+Início: [Data]  
+Término: [Data + 15 dias]
+
+## CRITÉRIOS DE SUCESSO
+- Detectar pelo menos 1 divergência crítica
+- Identificar lotes próximos ao vencimento
+- Economizar tempo de conciliação manual
+- Gerar ROI positivo
+
+## ENCERRAMENTO
+Ao final dos 15 dias, as partes decidem por:
+1. Assinar contrato comercial de continuidade
+2. Encerrar sem custos nem obrigações
+
+## ASSINATURAS
+
+_________________________          _________________________
+Marco Antonio Savala Beltrame      Multi Dados ERP
+Desenvolvedor                      Representante Legal
+
+Data: ___/___/_______

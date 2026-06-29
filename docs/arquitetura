@@ -1,0 +1,28 @@
+cat > docs/arquitetura/integracao-erp.md << 'EOF'
+# Arquitetura de Integração - Módulo de Inteligência
+
+## Princípio Fundamental
+**NÃO TOCAR O ERP** - O módulo funciona como "espectador inteligente"
+
+✅ LÊ dados do ERP (somente leitura)  
+✅ ANALISA e PROCESSA dados  
+✅ MOSTRA resultados em dashboard próprio  
+❌ NUNCA escreve, modifica ou exclui dados no ERP  
+❌ NUNCA toca no código-fonte do ERP
+
+## Métodos de Integração
+
+### Método 1: Views SQL (Recomendado) ⭐
+Criação de views na base de dados do ERP para leitura segura:
+
+```sql
+CREATE VIEW vw_inventario_auditoria AS
+SELECT 
+    p.codigo_produto,
+    p.nome_produto,
+    p.categoria,
+    s.quantidade_sistema,
+    f.quantidade_fisica,
+    (f.quantidade_fisica - s.quantidade_sistema) AS diferenca
+FROM estoque_sistema s
+LEFT JOIN estoque_fisico f ON s.codigo_produto = f.codigo_produto;

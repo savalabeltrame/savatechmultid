@@ -78,7 +78,7 @@ df_comp, df_fifo = cargar_datos()
 # 2. HEADER CORPORATIVO
 st.markdown("""
 <div class="header-container">
-    <h1 style="margin:0;">Multi Dados ERP</h1>
+    <h1 style="margin:0;">Savatech Dados ERP</h1>
     <h3 style="margin:5px 0 0 0; font-weight:normal;">Módulo de Inteligencia y Auditoría de Inventarios</h3>
 </div>
 """, unsafe_allow_html=True)
@@ -132,6 +132,7 @@ with tab_resumen:
         st.metric("Lotes en Riesgo", len(df_fifo[df_fifo['dias_para_vencer'] <= dias_filtro]))
 
     st.markdown("---")
+
     
     col_g1, col_g2 = st.columns(2)
     with col_g1:

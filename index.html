@@ -1,89 +1,469 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Savatech Dados ERP - Inteligência de Inventários</title>
-    <meta name="description" content="Sistema de Business Intelligence para detecção de perdas e auditoria de inventários em tempo real">
+    <meta name="description"
+        content="Sistema de Business Intelligence para detecção de perdas e auditoria de inventários em tempo real">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background-color: #f4f7f6; }
-        .header { background: linear-gradient(135deg, #003366 0%, #004080 100%); color: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; max-width: 1200px; margin: 0 auto; }
-        .logo { display: flex; align-items: center; gap: 1rem; font-size: 1.5rem; font-weight: bold; }
-        .logo img { height: 40px; width: auto; }
-        .nav-menu { display: flex; list-style: none; gap: 2rem; }
-        .nav-menu a { color: white; text-decoration: none; transition: opacity 0.3s; }
-        .nav-menu a:hover { opacity: 0.8; }
-        .hero { background: linear-gradient(135deg, #003366 0%, #0059b3 100%); color: white; padding: 100px 20px; text-align: center; }
-        .hero h1 { font-size: 3rem; margin-bottom: 1rem; }
-        .hero p { font-size: 1.3rem; max-width: 800px; margin: 0 auto 2rem; opacity: 0.9; }
-        .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-        .btn { display: inline-block; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-weight: bold; transition: all 0.3s; border: 2px solid transparent; cursor: pointer; }
-        .btn-primary { background: #28a745; color: white; }
-        .btn-primary:hover { background: #218838; transform: translateY(-2px); }
-        .btn-secondary { background: transparent; color: white; border: 2px solid white; }
-        .btn-secondary:hover { background: white; color: #003366; }
-        .btn-outline { background: transparent; color: #003366; border: 2px solid #003366; }
-        .btn-outline:hover { background: #003366; color: white; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        .stats { padding: 60px 20px; background: white; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; }
-        .stat-card { text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 8px; transition: transform 0.3s; }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .stat-card i { font-size: 2.5rem; color: #003366; margin-bottom: 1rem; }
-        .stat-card h3 { font-size: 2rem; color: #003366; margin-bottom: 0.5rem; }
-        section { padding: 80px 20px; }
-        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 1rem; color: #003366; }
-        .section-subtitle { text-align: center; font-size: 1.2rem; color: #666; margin-bottom: 3rem; }
-        .features { background: white; }
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
-        .feature-card { padding: 2rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #003366; transition: all 0.3s; }
-        .feature-card:hover { box-shadow: 0 5px 20px rgba(0,0,0,0.1); transform: translateX(5px); }
-        .feature-icon { font-size: 2.5rem; color: #003366; margin-bottom: 1rem; }
-        .feature-card h3 { color: #003366; margin-bottom: 1rem; }
-        .feature-list { list-style: none; margin-top: 1rem; }
-        .feature-list li { padding: 0.3rem 0; }
-        .feature-list i { color: #28a745; margin-right: 0.5rem; }
-        .tech { background: linear-gradient(135deg, #003366 0%, #004080 100%); color: white; }
-        .tech .section-title { color: white; }
-        .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 2rem; }
-        .tech-item { text-align: center; padding: 2rem; background: rgba(255,255,255,0.1); border-radius: 8px; transition: all 0.3s; }
-        .tech-item:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); }
-        .tech-item i { font-size: 3rem; margin-bottom: 1rem; }
-        .gallery { background: white; }
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
-        .gallery-item { position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .gallery-item img { width: 100%; height: 250px; object-fit: cover; transition: transform 0.3s; }
-        .gallery-item:hover img { transform: scale(1.1); }
-        .gallery-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,51,102,0.9)); color: white; padding: 2rem 1rem 1rem; }
-        .gallery-item .btn { margin: 1rem; }
-        .contact { background: #f8f9fa; }
-        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
-        .contact-info { display: flex; flex-direction: column; gap: 1.5rem; }
-        .contact-item { display: flex; gap: 1rem; align-items: center; padding: 1.5rem; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .contact-item i { font-size: 1.5rem; color: #003366; }
-        .contact-form { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        .form-group { margin-bottom: 1.5rem; }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit; }
-        .form-group textarea { resize: vertical; }
-        .footer { background: #003366; color: white; padding: 2rem; text-align: center; }
-        .footer-social { margin-top: 1rem; }
-        .footer-social a { color: white; font-size: 1.5rem; margin: 0 1rem; transition: opacity 0.3s; }
-        .footer-social a:hover { opacity: 0.8; }
-        .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
-        .lightbox.active { display: flex; }
-        .lightbox-content { max-width: 90%; max-height: 80%; border-radius: 8px; }
-        .lightbox-close { position: absolute; top: 20px; right: 40px; color: white; font-size: 3rem; cursor: pointer; }
-        .lightbox-caption { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: white; font-size: 1.2rem; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #334155;
+            background-color: #f8fafc;
+        }
+
+        .header {
+            background: #0f172a;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-menu a:hover {
+            opacity: 0.8;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #0f172a;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #0f172a;
+            border: 2px solid #0f172a;
+        }
+
+        .btn-outline:hover {
+            background: #0f172a;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .stats {
+            padding: 60px 20px;
+            background: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: #f1f5f9;
+            border-radius: 12px;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        section {
+            padding: 80px 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #64748b;
+            margin-bottom: 3rem;
+        }
+
+        .features {
+            background: white;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            border-left: 4px solid #2563eb;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            color: #0f172a;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .feature-list li {
+            padding: 0.3rem 0;
+        }
+
+        .feature-list i {
+            color: #10b981;
+            margin-right: 0.5rem;
+        }
+
+        .tech {
+            background: #0f172a;
+            color: white;
+        }
+
+        .tech .section-title {
+            color: white;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+        }
+
+        .tech-item {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .tech-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        .tech-item i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #60a5fa;
+        }
+
+        .gallery {
+            background: white;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(15, 23, 42, 0.9));
+            color: white;
+            padding: 2rem 1rem 1rem;
+        }
+
+        .gallery-item .btn {
+            margin: 1rem;
+        }
+
+        .contact {
+            background: #f8fafc;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .contact-item {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .contact-item i {
+            font-size: 1.5rem;
+            color: #2563eb;
+        }
+
+        .contact-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+        .footer {
+            background: #0f172a;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .footer-social {
+            margin-top: 1rem;
+        }
+
+        .footer-social a {
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 1rem;
+            transition: opacity 0.3s;
+        }
+
+        .footer-social a:hover {
+            opacity: 0.8;
+        }
+
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 80%;
+            border-radius: 8px;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: white;
+            font-size: 3rem;
+            cursor: pointer;
+        }
+
+        .lightbox-caption {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 1.2rem;
+        }
+
         @media (max-width: 768px) {
-            .nav-menu { display: none; }
-            .hero h1 { font-size: 2rem; }
-            .contact-grid { grid-template-columns: 1fr; }
+            .nav-menu {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
+
 </head>
+
 <body>
     <header class="header">
         <nav class="navbar">
@@ -103,7 +483,8 @@
 
     <section id="inicio" class="hero">
         <h1>Savatech - Inteligência de Inventários</h1>
-        <p>Módulo de Business Intelligence desenvolvido para integrar-se a ERPs do setor varejista. Detecte perdas, roubos e vencimentos em tempo real. Reduza em até 4% suas perdas anuais com auditoria automatizada.</p>
+        <p>Módulo de Business Intelligence desenvolvido para integrar-se a ERPs do setor varejista. Detecte perdas,
+            roubos e vencimentos em tempo real. Reduza em até 4% suas perdas anuais com auditoria automatizada.</p>
         <div class="hero-buttons">
             <a href="#galeria" class="btn btn-primary"><i class="fas fa-play-circle"></i> Ver Demonstração</a>
             <a href="#recursos" class="btn btn-secondary"><i class="fas fa-list"></i> Conhecer Recursos</a>
@@ -113,10 +494,22 @@
     <section class="stats">
         <div class="container">
             <div class="stats-grid">
-                <div class="stat-card"><i class="fas fa-chart-line"></i><h3>40%</h3><p>Discrepâncias Detectadas</p></div>
-                <div class="stat-card"><i class="fas fa-clock"></i><h3>15h</h3><p>Economia Semanal</p></div>
-                <div class="stat-card"><i class="fas fa-shield-alt"></i><h3>100%</h3><p>Seguro - Somente Leitura</p></div>
-                <div class="stat-card"><i class="fas fa-rocket"></i><h3>15 dias</h3><p>Piloto Gratuito</p></div>
+                <div class="stat-card"><i class="fas fa-chart-line"></i>
+                    <h3>40%</h3>
+                    <p>Discrepâncias Detectadas</p>
+                </div>
+                <div class="stat-card"><i class="fas fa-clock"></i>
+                    <h3>15h</h3>
+                    <p>Economia Semanal</p>
+                </div>
+                <div class="stat-card"><i class="fas fa-shield-alt"></i>
+                    <h3>100%</h3>
+                    <p>Seguro - Somente Leitura</p>
+                </div>
+                <div class="stat-card"><i class="fas fa-rocket"></i>
+                    <h3>15 dias</h3>
+                    <p>Piloto Gratuito</p>
+                </div>
             </div>
         </div>
     </section>
@@ -129,7 +522,8 @@
                 <div class="feature-card">
                     <div class="feature-icon"><i class="fas fa-sync-alt"></i></div>
                     <h3>Auditoria Automática Diária</h3>
-                    <p>Cruzamento automático entre inventário físico e de sistema com detecção de discrepâncias em tempo real.</p>
+                    <p>Cruzamento automático entre inventário físico e de sistema com detecção de discrepâncias em tempo
+                        real.</p>
                     <ul class="feature-list">
                         <li><i class="fas fa-check"></i> Alertas automáticos por email</li>
                         <li><i class="fas fa-check"></i> Relatórios em Excel formatados</li>
@@ -179,7 +573,8 @@
                 <div class="feature-card">
                     <div class="feature-icon"><i class="fas fa-search-dollar"></i></div>
                     <h3>Detecção de Perdas e Roubos</h3>
-                    <p>Identificação de padrões de divergências que indicam possíveis roubos ou erros de recebimento.</p>
+                    <p>Identificação de padrões de divergências que indicam possíveis roubos ou erros de recebimento.
+                    </p>
                     <ul class="feature-list">
                         <li><i class="fas fa-check"></i> Classificação por criticidade</li>
                         <li><i class="fas fa-check"></i> Alertas de produtos críticos</li>
@@ -218,7 +613,8 @@
                         <h3>Dashboard Executivo</h3>
                         <p>KPIs e métricas em tempo real</p>
                     </div>
-                    <button class="btn btn-outline view-screenshot" data-image="assets/imagenes/img1.png" data-caption="Dashboard Executivo">
+                    <button class="btn btn-outline view-screenshot" data-image="assets/imagenes/img1.png"
+                        data-caption="Dashboard Executivo">
                         <i class="fas fa-eye"></i> Ver Imagem
                     </button>
                 </div>
@@ -228,7 +624,8 @@
                         <h3>Auditoria de Stock</h3>
                         <p>Conciliação Sistema vs Físico</p>
                     </div>
-                    <button class="btn btn-outline view-screenshot" data-image="assets/capturas/img2.png" data-caption="Auditoria de Stock">
+                    <button class="btn btn-outline view-screenshot" data-image="assets/capturas/img2.png"
+                        data-caption="Auditoria de Stock">
                         <i class="fas fa-eye"></i> Ver Imagem
                     </button>
                 </div>
@@ -238,7 +635,8 @@
                         <h3>Radar de Vencimentos</h3>
                         <p>Alertas FIFO de lotes próximos</p>
                     </div>
-                    <button class="btn btn-outline view-screenshot" data-image="assets/diagramas/img3.png" data-caption="Radar de Vencimentos FIFO">
+                    <button class="btn btn-outline view-screenshot" data-image="assets/diagramas/img3.png"
+                        data-caption="Radar de Vencimentos FIFO">
                         <i class="fas fa-eye"></i> Ver Imagem
                     </button>
                 </div>
@@ -297,7 +695,8 @@
                         <div class="form-group">
                             <textarea placeholder="Mensagem" rows="5" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%; border: none; cursor: pointer;">
+                        <button type="submit" class="btn btn-primary"
+                            style="width: 100%; border: none; cursor: pointer;">
                             <i class="fas fa-paper-plane"></i> Enviar Mensagem
                         </button>
                     </form>
@@ -313,7 +712,7 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const lightbox = document.getElementById('lightbox');
             const lightboxImg = document.getElementById('lightbox-img');
             const lightboxCaption = document.getElementById('lightbox-caption');
@@ -321,7 +720,7 @@
             const viewButtons = document.querySelectorAll('.view-screenshot');
 
             viewButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     const image = this.getAttribute('data-image');
                     const caption = this.getAttribute('data-caption');
                     lightboxImg.src = image;
@@ -330,11 +729,11 @@
                 });
             });
 
-            lightboxClose.addEventListener('click', function() {
+            lightboxClose.addEventListener('click', function () {
                 lightbox.classList.remove('active');
             });
 
-            lightbox.addEventListener('click', function(e) {
+            lightbox.addEventListener('click', function (e) {
                 if (e.target === lightbox) {
                     lightbox.classList.remove('active');
                 }
@@ -351,11 +750,12 @@
             });
         });
 
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
+        document.getElementById('contactForm').addEventListener('submit', function (e) {
             e.preventDefault();
             alert('Mensagem enviada com sucesso! Entraremos em contato em breve.');
             this.reset();
         });
     </script>
 </body>
+
 </html>

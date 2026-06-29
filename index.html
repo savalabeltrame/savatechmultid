@@ -1,3 +1,4 @@
+cat > index.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -14,7 +15,7 @@
         .header { background: linear-gradient(135deg, #003366 0%, #004080 100%); color: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; max-width: 1200px; margin: 0 auto; }
         .logo { display: flex; align-items: center; gap: 1rem; font-size: 1.5rem; font-weight: bold; }
-        .logo i { font-size: 2rem; }
+        .logo img { height: 40px; width: auto; }
         .nav-menu { display: flex; list-style: none; gap: 2rem; }
         .nav-menu a { color: white; text-decoration: none; transition: opacity 0.3s; }
         .nav-menu a:hover { opacity: 0.8; }
@@ -26,7 +27,7 @@
         .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
         
         /* Buttons */
-        .btn { display: inline-block; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-weight: bold; transition: all 0.3s; border: 2px solid transparent; }
+        .btn { display: inline-block; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-weight: bold; transition: all 0.3s; border: 2px solid transparent; cursor: pointer; }
         .btn-primary { background: #28a745; color: white; }
         .btn-primary:hover { background: #218838; transform: translateY(-2px); }
         .btn-secondary { background: transparent; color: white; border: 2px solid white; }
@@ -114,7 +115,7 @@
     <header class="header">
         <nav class="navbar">
             <div class="logo">
-                <i class="fas fa-database"></i>
+                <img src="assets/imagens/img4.png" alt="Savatech Logo" onerror="this.style.display='none'">
                 <span>Savatech Dados ERP</span>
             </div>
             <ul class="nav-menu">
@@ -356,30 +357,32 @@
 
     <script>
         // Lightbox functionality
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImg = document.getElementById('lightbox-img');
-        const lightboxCaption = document.getElementById('lightbox-caption');
-        const lightboxClose = document.querySelector('.lightbox-close');
-        const viewButtons = document.querySelectorAll('.view-screenshot');
+        document.addEventListener('DOMContentLoaded', function() {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxCaption = document.getElementById('lightbox-caption');
+            const lightboxClose = document.querySelector('.lightbox-close');
+            const viewButtons = document.querySelectorAll('.view-screenshot');
 
-        viewButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const image = button.getAttribute('data-image');
-                const caption = button.getAttribute('data-caption');
-                lightboxImg.src = image;
-                lightboxCaption.textContent = caption;
-                lightbox.classList.add('active');
+            viewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const image = this.getAttribute('data-image');
+                    const caption = this.getAttribute('data-caption');
+                    lightboxImg.src = image;
+                    lightboxCaption.textContent = caption;
+                    lightbox.classList.add('active');
+                });
             });
-        });
 
-        lightboxClose.addEventListener('click', () => {
-            lightbox.classList.remove('active');
-        });
-
-        lightbox.addEventListener('click', (e) => {
-            if (e.target === lightbox) {
+            lightboxClose.addEventListener('click', function() {
                 lightbox.classList.remove('active');
-            }
+            });
+
+            lightbox.addEventListener('click', function(e) {
+                if (e.target === lightbox) {
+                    lightbox.classList.remove('active');
+                }
+            });
         });
 
         // Smooth scrolling
@@ -402,3 +405,4 @@
     </script>
 </body>
 </html>
+HTMLEOF

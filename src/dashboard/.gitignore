@@ -1,5 +1,5 @@
 # Bases de datos (NO subir archivos .db)
-*.db
+# *.db
 *.sqlite
 *.sqlite3
 

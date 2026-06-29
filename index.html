@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -8,8 +9,6 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background-color: #f4f7f6; }
-        
-        /* Header */
         .header { background: linear-gradient(135deg, #003366 0%, #004080 100%); color: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; max-width: 1200px; margin: 0 auto; }
         .logo { display: flex; align-items: center; gap: 1rem; font-size: 1.5rem; font-weight: bold; }
@@ -17,14 +16,10 @@
         .nav-menu { display: flex; list-style: none; gap: 2rem; }
         .nav-menu a { color: white; text-decoration: none; transition: opacity 0.3s; }
         .nav-menu a:hover { opacity: 0.8; }
-        
-        /* Hero */
         .hero { background: linear-gradient(135deg, #003366 0%, #0059b3 100%); color: white; padding: 100px 20px; text-align: center; }
         .hero h1 { font-size: 3rem; margin-bottom: 1rem; }
         .hero p { font-size: 1.3rem; max-width: 800px; margin: 0 auto 2rem; opacity: 0.9; }
         .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-        
-        /* Buttons */
         .btn { display: inline-block; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-weight: bold; transition: all 0.3s; border: 2px solid transparent; cursor: pointer; }
         .btn-primary { background: #28a745; color: white; }
         .btn-primary:hover { background: #218838; transform: translateY(-2px); }
@@ -32,24 +27,16 @@
         .btn-secondary:hover { background: white; color: #003366; }
         .btn-outline { background: transparent; color: #003366; border: 2px solid #003366; }
         .btn-outline:hover { background: #003366; color: white; }
-        
-        /* Container */
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        
-        /* Stats */
         .stats { padding: 60px 20px; background: white; }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; }
         .stat-card { text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 8px; transition: transform 0.3s; }
         .stat-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .stat-card i { font-size: 2.5rem; color: #003366; margin-bottom: 1rem; }
         .stat-card h3 { font-size: 2rem; color: #003366; margin-bottom: 0.5rem; }
-        
-        /* Sections */
         section { padding: 80px 20px; }
         .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 1rem; color: #003366; }
         .section-subtitle { text-align: center; font-size: 1.2rem; color: #666; margin-bottom: 3rem; }
-        
-        /* Features */
         .features { background: white; }
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
         .feature-card { padding: 2rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #003366; transition: all 0.3s; }
@@ -59,16 +46,12 @@
         .feature-list { list-style: none; margin-top: 1rem; }
         .feature-list li { padding: 0.3rem 0; }
         .feature-list i { color: #28a745; margin-right: 0.5rem; }
-        
-        /* Tech Stack */
         .tech { background: linear-gradient(135deg, #003366 0%, #004080 100%); color: white; }
         .tech .section-title { color: white; }
         .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 2rem; }
         .tech-item { text-align: center; padding: 2rem; background: rgba(255,255,255,0.1); border-radius: 8px; transition: all 0.3s; }
         .tech-item:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); }
         .tech-item i { font-size: 3rem; margin-bottom: 1rem; }
-        
-        /* Gallery */
         .gallery { background: white; }
         .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
         .gallery-item { position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
@@ -76,8 +59,6 @@
         .gallery-item:hover img { transform: scale(1.1); }
         .gallery-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,51,102,0.9)); color: white; padding: 2rem 1rem 1rem; }
         .gallery-item .btn { margin: 1rem; }
-        
-        /* Contact */
         .contact { background: #f8f9fa; }
         .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
         .contact-info { display: flex; flex-direction: column; gap: 1.5rem; }
@@ -87,21 +68,15 @@
         .form-group { margin-bottom: 1.5rem; }
         .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit; }
         .form-group textarea { resize: vertical; }
-        
-        /* Footer */
         .footer { background: #003366; color: white; padding: 2rem; text-align: center; }
         .footer-social { margin-top: 1rem; }
         .footer-social a { color: white; font-size: 1.5rem; margin: 0 1rem; transition: opacity 0.3s; }
         .footer-social a:hover { opacity: 0.8; }
-        
-        /* Lightbox */
         .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
         .lightbox.active { display: flex; }
         .lightbox-content { max-width: 90%; max-height: 80%; border-radius: 8px; }
         .lightbox-close { position: absolute; top: 20px; right: 40px; color: white; font-size: 3rem; cursor: pointer; }
         .lightbox-caption { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: white; font-size: 1.2rem; }
-        
-        /* Responsive */
         @media (max-width: 768px) {
             .nav-menu { display: none; }
             .hero h1 { font-size: 2rem; }
@@ -113,7 +88,7 @@
     <header class="header">
         <nav class="navbar">
             <div class="logo">
-                <img src="assets/imagens/img4.png" alt="Savatech Logo" >
+                <img src="assets/imagens/img4.png" alt="Savatech Logo">
                 <span>Savatech Dados ERP</span>
             </div>
             <ul class="nav-menu">
@@ -138,26 +113,10 @@
     <section class="stats">
         <div class="container">
             <div class="stats-grid">
-                <div class="stat-card">
-                    <i class="fas fa-chart-line"></i>
-                    <h3>40%</h3>
-                    <p>Discrepâncias Detectadas</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-clock"></i>
-                    <h3>15h</h3>
-                    <p>Economia Semanal</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-shield-alt"></i>
-                    <h3>100%</h3>
-                    <p>Seguro - Somente Leitura</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-rocket"></i>
-                    <h3>15 dias</h3>
-                    <p>Piloto Gratuito</p>
-                </div>
+                <div class="stat-card"><i class="fas fa-chart-line"></i><h3>40%</h3><p>Discrepâncias Detectadas</p></div>
+                <div class="stat-card"><i class="fas fa-clock"></i><h3>15h</h3><p>Economia Semanal</p></div>
+                <div class="stat-card"><i class="fas fa-shield-alt"></i><h3>100%</h3><p>Seguro - Somente Leitura</p></div>
+                <div class="stat-card"><i class="fas fa-rocket"></i><h3>15 dias</h3><p>Piloto Gratuito</p></div>
             </div>
         </div>
     </section>
@@ -254,7 +213,7 @@
             <p class="section-subtitle">Conheça as interfaces do módulo de inteligência</p>
             <div class="gallery-grid">
                 <div class="gallery-item">
-                    <img src="assets/imagenes/img1.png" alt="Dashboard Geral" onerror="this.src='https://via.placeholder.com/600x400/003366/ffffff?text=Dashboard+Executivo'">
+                    <img src="assets/imagenes/img1.png" alt="Dashboard Geral">
                     <div class="gallery-overlay">
                         <h3>Dashboard Executivo</h3>
                         <p>KPIs e métricas em tempo real</p>
@@ -264,7 +223,7 @@
                     </button>
                 </div>
                 <div class="gallery-item">
-                    <img src="assets/capturas/img2.png" alt="Auditoria de Stock" onerror="this.src='https://via.placeholder.com/600x400/003366/ffffff?text=Auditoria+de+Stock'">
+                    <img src="assets/capturas/img2.png" alt="Auditoria de Stock">
                     <div class="gallery-overlay">
                         <h3>Auditoria de Stock</h3>
                         <p>Conciliação Sistema vs Físico</p>
@@ -274,7 +233,7 @@
                     </button>
                 </div>
                 <div class="gallery-item">
-                    <img src="assets/diagramas/img3.png" alt="Radar de Vencimentos" onerror="this.src='https://via.placeholder.com/600x400/003366/ffffff?text=Radar+de+Vencimentos'">
+                    <img src="assets/diagramas/img3.png" alt="Radar de Vencimentos">
                     <div class="gallery-overlay">
                         <h3>Radar de Vencimentos</h3>
                         <p>Alertas FIFO de lotes próximos</p>
@@ -354,7 +313,6 @@
     </div>
 
     <script>
-        // Lightbox functionality
         document.addEventListener('DOMContentLoaded', function() {
             const lightbox = document.getElementById('lightbox');
             const lightboxImg = document.getElementById('lightbox-img');
@@ -383,7 +341,6 @@
             });
         });
 
-        // Smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -394,7 +351,6 @@
             });
         });
 
-        // Form submission
         document.getElementById('contactForm').addEventListener('submit', function(e) {
             e.preventDefault();
             alert('Mensagem enviada com sucesso! Entraremos em contato em breve.');
@@ -403,4 +359,3 @@
     </script>
 </body>
 </html>
-HTMLEOF

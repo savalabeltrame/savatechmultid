@@ -39,9 +39,16 @@ footer {visibility: hidden;}
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 # CARGA DE DATOS (Optimizada)
+import os
+
+# CARGA DE DATOS (Optimizada)
 @st.cache_data
 def cargar_datos():
-    conn_sup = sqlite3.connect('../../dados/inventario_supermercado.db')
+    # Obtener la ruta base del proyecto (funciona en local y en Streamlit Cloud)
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    dados_dir = os.path.join(base_dir, 'dados')
+    
+    conn_sup = sqlite3.connect(os.path.join(dados_dir, 'inventario_supermercado.db'))
     df_sistema = pd.read_sql_query("SELECT * FROM stock_sistema", conn_sup)
     df_fisico = pd.read_sql_query("SELECT * FROM stock_fisico", conn_sup)
     conn_sup.close()
@@ -55,7 +62,7 @@ def cargar_datos():
         else: return 'Diferencia'
     df_comp['estado'] = df_comp.apply(estado, axis=1)
     
-    conn_fifo = sqlite3.connect('../../dados/inventario_fifo.db')
+    conn_fifo = sqlite3.connect(os.path.join(dados_dir, 'inventario_fifo.db'))
     df_prod = pd.read_sql_query("SELECT * FROM productos", conn_fifo)
     df_lotes = pd.read_sql_query("SELECT * FROM lotes_inventario", conn_fifo)
     conn_fifo.close()
@@ -66,7 +73,6 @@ def cargar_datos():
     df_fifo['valor_lote'] = df_fifo['cantidad_actual'] * df_fifo['costo_unitario']
     
     return df_comp, df_fifo
-
 df_comp, df_fifo = cargar_datos()
 
 # 2. HEADER CORPORATIVO

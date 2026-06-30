@@ -743,24 +743,23 @@
                 </div>
                 <div class="contact-form">
                     <h3 style="margin-bottom: 1.5rem; color: var(--text-primary);">Solicite uma Demonstração</h3>
-                    <form id="contactForm">
-                        <div class="form-group">
-                            <input type="text" placeholder="Nome completo" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="email" placeholder="Email" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" placeholder="Empresa">
-                        </div>
-                        <div class="form-group">
-                            <textarea placeholder="Mensagem" rows="5" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary"
-                            style="width: 100%; border: none; cursor: pointer;">
-                            <i class="fas fa-paper-plane"></i> Enviar Mensagem
-                        </button>
-                    </form>
+                    <form action="https://formspree.io/f/xdarlpny" method="POST" id="contactForm">
+    <div class="form-group">
+        <input type="text" name="nome" placeholder="Nome completo" required>
+    </div>
+    <div class="form-group">
+        <input type="email" name="email" placeholder="Email" required>
+    </div>
+    <div class="form-group">
+        <input type="text" name="empresa" placeholder="Empresa">
+    </div>
+    <div class="form-group">
+        <textarea name="mensagem" placeholder="Mensagem" rows="5" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary" style="width: 100%; border: none; cursor: pointer;">
+        <i class="fas fa-paper-plane"></i> Enviar Mensagem
+    </button>
+</form>
                 </div>
             </div>
         </div>

@@ -17,18 +17,33 @@ st.set_page_config(
     }
 )
 
-# CSS para ocultar el footer de Streamlit y dar estilo corporativo VERDE
+# CSS para ocultar el footer de Streamlit y dar estilo corporativo VERDE con fuente Playfair
 hide_streamlit_style = """
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap');
+
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 .header-container {
     background: linear-gradient(135deg, #065f46 0%, #047857 100%);
     color: white;
-    padding: 20px;
+    padding: 25px;
     border-radius: 12px;
     margin-bottom: 20px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.header-container h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 2.5rem;
+    margin: 0;
+    letter-spacing: 1px;
+}
+.header-container h3 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 300;
+    margin: 8px 0 0 0;
+    opacity: 0.95;
 }
 .metric-card {
     background-color: #f0fdf4;
@@ -76,21 +91,21 @@ def cargar_datos():
 
 df_comp, df_fifo = cargar_datos()
 
-# 2. HEADER CORPORATIVO VERDE
+# 2. HEADER CORPORATIVO VERDE con Playfair Display
 st.markdown("""
 <div class="header-container">
-    <h1 style="margin:0;">Savatech Dados ERP</h1>
-    <h3 style="margin:5px 0 0 0; font-weight:normal;">Módulo de Inteligencia y Auditoría de Inventarios</h3>
+    <h1>Savatech Dados ERP</h1>
+    <h3>Módulo de Inteligencia y Auditoría de Inventarios</h3>
 </div>
 """, unsafe_allow_html=True)
 
 # 3. BARRA LATERAL (Simulación de Software Real)
 st.sidebar.markdown("### ⚙️ Configuración del Módulo")
 st.sidebar.success("✅ Sistema Conectado al ERP")
-st.sidebar.info(f"👤 Usuario: Gerente de Operaciones")
+st.sidebar.info(f" Usuario: Gerente de Operaciones")
 
 st.sidebar.markdown("---")
-st.sidebar.header("🔍 Filtros de Auditoría")
+st.sidebar.header(" Filtros de Auditoría")
 
 categorias = ['Todas'] + list(df_comp['categoria'].unique())
 cat_sel = st.sidebar.selectbox("Categoría de Producto", categorias)
@@ -108,7 +123,7 @@ if estado_sel != 'Todos': df_filtrado = df_filtrado[df_filtrado['estado'] == est
 # 4. PESTAÑAS EJECUTIVAS (Tabs)
 tab_resumen, tab_auditoria, tab_fifo = st.tabs([
     "📊 Resumen Ejecutivo", 
-    "🔍 Auditoría de Stock (Sistema vs Físico)", 
+    " Auditoría de Stock (Sistema vs Físico)", 
     "📅 Radar de Vencimientos (FIFO)"
 ])
 

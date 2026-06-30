@@ -4,6 +4,7 @@ import sqlite3
 import plotly.express as px
 from datetime import date
 import os
+import io
 
 # 1. CONFIGURACIÓN "ENTERPRISE" (Oculta menús de Streamlit)
 st.set_page_config(
@@ -123,7 +124,7 @@ if estado_sel != 'Todos': df_filtrado = df_filtrado[df_filtrado['estado'] == est
 tab_resumen, tab_auditoria, tab_fifo = st.tabs([
     "📊 Resumen Ejecutivo", 
     "🔍 Auditoría de Stock (Sistema vs Físico)", 
-    "📅 Radar de Vencimientos (FIFO)"
+    " Radar de Vencimientos (FIFO)"
 ])
 
 # --- PESTAÑA 1: RESUMEN EJECUTIVO ---
@@ -166,7 +167,7 @@ with tab_resumen:
         fig_cat.update_layout(showlegend=False)
         st.plotly_chart(fig_cat, use_container_width=True)
     
-    # Botón de descarga para resumen
+    # Botones de descarga para resumen
     st.markdown("---")
     col_btn1, col_btn2 = st.columns(2)
     with col_btn1:
@@ -178,9 +179,15 @@ with tab_resumen:
             use_container_width=True
         )
     with col_btn2:
+        # Crear Excel en memoria usando BytesIO
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df_filtrado.to_excel(writer, index=False, sheet_name='Resumen')
+        output.seek(0)
+        
         st.download_button(
             label="📥 Descargar Resumen (Excel)",
-            data=df_filtrado.to_excel(index=False, engine='openpyxl'),
+            data=output,
             file_name='resumen_inventario.xlsx',
             mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             use_container_width=True

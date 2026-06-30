@@ -76,6 +76,101 @@ def calcular_kpis_avanzados(df_comp, df_fifo):
 # CARGA DE DATOS (Incluye ERP Simulado Seguro)
 # ============================================
 @st.cache_data
+# ============================================
+# FUNCIÓN PARA CREAR ERP SIMULADO SI NO EXISTE
+# ============================================
+def crear_erp_simulado_si_no_existe(dados_dir):
+    """Crea la base de datos del ERP simulado si no existe"""
+    db_path = os.path.join(dados_dir, 'erp_simulado_totvs.db')
+    
+    if not os.path.exists(db_path):
+        import random
+        from datetime import datetime, timedelta
+        
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        
+        # Crear tablas
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ERP_PRODUCTOS (
+                CODIGO VARCHAR(20) PRIMARY KEY,
+                NOMBRE VARCHAR(100),
+                CATEGORIA VARCHAR(50),
+                PRECIO_COSTO REAL,
+                PRECIO_VENTA REAL,
+                PROVEEDOR VARCHAR(50)
+            )
+        ''')
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ERP_STOCK (
+                CODIGO VARCHAR(20),
+                ALMACEN VARCHAR(10),
+                CANTIDAD_SISTEMA REAL,
+                ULTIMA_ACTUALIZACION DATETIME,
+                PRIMARY KEY (CODIGO, ALMACEN)
+            )
+        ''')
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ERP_MOVIMIENTOS (
+                ID_MOVIMIENTO INTEGER PRIMARY KEY AUTOINCREMENT,
+                CODIGO VARCHAR(20),
+                TIPO VARCHAR(10),
+                CANTIDAD REAL,
+                FECHA DATETIME,
+                NOTA_FISCAL VARCHAR(20)
+            )
+        ''')
+        
+        # Datos de productos
+        productos = [
+            ('7891000100101', 'Leche Entera 1L', 'Lacteos', 3.50, 5.99, 'Parmalat'),
+            ('7891000100102', 'Cafe Molido 500g', 'Abarrotes', 8.00, 14.90, 'Pilao'),
+            ('7891000100103', 'Arroz Tipo 1 5kg', 'Abarrotes', 15.00, 24.90, 'Tio Joao'),
+            ('7891000100104', 'Frijol Negro 1kg', 'Abarrotes', 6.00, 9.90, 'Camil'),
+            ('7891000100105', 'Aceite de Soya 900ml', 'Abarrotes', 4.50, 7.99, 'Liza'),
+            ('7891000100106', 'Azucar Refinado 1kg', 'Abarrotes', 3.00, 4.99, 'Uniao'),
+            ('7891000100107', 'Harina de Trigo 1kg', 'Abarrotes', 3.50, 5.50, 'Dona Benta'),
+            ('7891000100108', 'Galleta Maria 400g', 'Galletas', 2.50, 4.50, 'Bauducco'),
+            ('7891000100109', 'Jabon en Polvo 1kg', 'Limpieza', 12.00, 19.90, 'Omo'),
+            ('7891000100110', 'Detergente Liquido 500ml', 'Limpieza', 2.00, 3.50, 'Ype'),
+            ('7891000100111', 'Papel Higienico 12 rollos', 'Higiene', 10.00, 18.90, 'Neve'),
+            ('7891000100112', 'Shampoo 400ml', 'Higiene', 9.00, 16.90, 'Pantene'),
+            ('7891000100113', 'Cerveza Lata 350ml', 'Bebidas', 2.50, 4.50, 'Brahma'),
+            ('7891000100114', 'Refresco 2L', 'Bebidas', 5.00, 8.90, 'Coca Cola'),
+            ('7891000100115', 'Jugo de Naranja 1L', 'Bebidas', 4.00, 7.50, 'Del Valle')
+        ]
+        
+        cursor.executemany('INSERT OR IGNORE INTO ERP_PRODUCTOS VALUES (?,?,?,?,?,?)', productos)
+        
+        # Stock aleatorio
+        stock_data = []
+        for cod, nom, cat, pc, pv, prov in productos:
+            cantidad = random.uniform(10, 500)
+            fecha = datetime.now() - timedelta(days=random.randint(0, 5))
+            stock_data.append((cod, 'ALM01', round(cantidad, 2), fecha))
+        cursor.executemany('INSERT OR IGNORE INTO ERP_STOCK VALUES (?,?,?,?)', stock_data)
+        
+        # Movimientos aleatorios
+        movimientos = []
+        for i in range(50):
+            cod = random.choice(productos)[0]
+            tipo = random.choice(['ENTRADA', 'SALIDA'])
+            cant = random.uniform(1, 50)
+            fecha = datetime.now() - timedelta(hours=random.randint(1, 168))
+            nf = f'NF-{random.randint(10000, 99999)}'
+            movimientos.append((cod, tipo, round(cant, 2), fecha, nf))
+        cursor.executemany('INSERT INTO ERP_MOVIMIENTOS (CODIGO, TIPO, CANTIDAD, FECHA, NOTA_FISCAL) VALUES (?,?,?,?,?)', movimientos)
+        
+        conn.commit()
+        conn.close()
+        print("✅ Base de datos ERP simulada creada automáticamente.")
+
+# ============================================
+# CARGA DE DATOS (Incluye ERP Simulado Seguro)
+# ============================================
+@st.cache_data
 def cargar_datos():
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     dados_dir = os.path.join(base_dir, 'dados')
@@ -106,9 +201,12 @@ def cargar_datos():
     df_fifo['dias_para_vencer'] = (df_fifo['fecha_vencimiento'] - pd.Timestamp(date.today())).dt.days
     df_fifo['valor_lote'] = df_fifo['cantidad_actual'] * df_fifo['costo_unitario']
 
-    # 3. 🔗 CONEXIÓN SEGURA AL ERP SIMULADO (MODO SOLO LECTURA)
+    # 3. 🔗 CREAR ERP SIMULADO SI NO EXISTE
+    crear_erp_simulado_si_no_existe(dados_dir)
+    
+    # 4. CONEXIÓN SEGURA AL ERP SIMULADO (MODO SOLO LECTURA)
     db_erp_path = os.path.join(dados_dir, 'erp_simulado_totvs.db')
-    uri_erp = f"file:{db_erp_path}?mode=ro" # 🔒 BLOQUEO DE ESCRITURA
+    uri_erp = f"file:{db_erp_path}?mode=ro"
     conn_erp = sqlite3.connect(uri_erp, uri=True)
     
     df_erp_prod = pd.read_sql_query("SELECT * FROM ERP_PRODUCTOS", conn_erp)
@@ -117,34 +215,6 @@ def cargar_datos():
     conn_erp.close()
     
     return df_comp, df_fifo, df_erp_prod, df_erp_stock, df_erp_mov
-
-df_comp, df_fifo, df_erp_prod, df_erp_stock, df_erp_mov = cargar_datos()
-
-# 2. HEADER CORPORATIVO
-st.markdown("""
-<div class="header-container">
-    <h1>Savatech Dados ERP</h1>
-    <h3>Módulo de Inteligencia y Auditoría de Inventarios</h3>
-</div>
-""", unsafe_allow_html=True)
-
-# 3. BARRA LATERAL
-st.sidebar.markdown("### ⚙️ Configuración del Módulo")
-st.sidebar.success("✅ Sistema Conectado al ERP")
-st.sidebar.info(f"👤 Usuario: Gerente de Operaciones")
-st.sidebar.markdown("---")
-st.sidebar.header(" Filtros de Auditoría")
-
-categorias = ['Todas'] + list(df_comp['categoria'].unique())
-cat_sel = st.sidebar.selectbox("Categoría de Producto", categorias)
-estados = ['Todos'] + list(df_comp['estado'].unique())
-estado_sel = st.sidebar.selectbox("Estado de Conciliación", estados)
-dias_filtro = st.sidebar.slider("Radar de Vencimiento (Próximos X días)", 0, 90, 30)
-
-df_filtrado = df_comp.copy()
-if cat_sel != 'Todas': df_filtrado = df_filtrado[df_filtrado['categoria'] == cat_sel]
-if estado_sel != 'Todos': df_filtrado = df_filtrado[df_filtrado['estado'] == estado_sel]
-
 # 4. PESTAÑAS EJECUTIVAS (5 Pestañas)
 tab_resumen, tab_auditoria, tab_fifo, tab_analise, tab_erp = st.tabs([
     " Resumen Ejecutivo", 

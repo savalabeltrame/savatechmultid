@@ -59,7 +59,6 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 # CARGA DE DATOS (Optimizada)
 @st.cache_data
 def cargar_datos():
-    # Obtener la ruta base del proyecto (funciona en local y en Streamlit Cloud)
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     dados_dir = os.path.join(base_dir, 'dados')
     
@@ -102,10 +101,10 @@ st.markdown("""
 # 3. BARRA LATERAL (Simulación de Software Real)
 st.sidebar.markdown("### ⚙️ Configuración del Módulo")
 st.sidebar.success("✅ Sistema Conectado al ERP")
-st.sidebar.info(f" Usuario: Gerente de Operaciones")
+st.sidebar.info(f"👤 Usuario: Gerente de Operaciones")
 
 st.sidebar.markdown("---")
-st.sidebar.header(" Filtros de Auditoría")
+st.sidebar.header("🔍 Filtros de Auditoría")
 
 categorias = ['Todas'] + list(df_comp['categoria'].unique())
 cat_sel = st.sidebar.selectbox("Categoría de Producto", categorias)
@@ -123,7 +122,7 @@ if estado_sel != 'Todos': df_filtrado = df_filtrado[df_filtrado['estado'] == est
 # 4. PESTAÑAS EJECUTIVAS (Tabs)
 tab_resumen, tab_auditoria, tab_fifo = st.tabs([
     "📊 Resumen Ejecutivo", 
-    " Auditoría de Stock (Sistema vs Físico)", 
+    "🔍 Auditoría de Stock (Sistema vs Físico)", 
     "📅 Radar de Vencimientos (FIFO)"
 ])
 
@@ -166,6 +165,26 @@ with tab_resumen:
                          labels={'categoria': 'Categoría', 'valor_lote': 'Valor (R$)'})
         fig_cat.update_layout(showlegend=False)
         st.plotly_chart(fig_cat, use_container_width=True)
+    
+    # Botón de descarga para resumen
+    st.markdown("---")
+    col_btn1, col_btn2 = st.columns(2)
+    with col_btn1:
+        st.download_button(
+            label="📥 Descargar Resumen (CSV)",
+            data=df_filtrado.to_csv(index=False).encode('utf-8'),
+            file_name='resumen_inventario.csv',
+            mime='text/csv',
+            use_container_width=True
+        )
+    with col_btn2:
+        st.download_button(
+            label="📥 Descargar Resumen (Excel)",
+            data=df_filtrado.to_excel(index=False, engine='openpyxl'),
+            file_name='resumen_inventario.xlsx',
+            mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            use_container_width=True
+        )
 
 # --- PESTAÑA 2: AUDITORÍA DE STOCK ---
 with tab_auditoria:
@@ -183,6 +202,16 @@ with tab_auditoria:
         
     st.subheader("Detalle de Productos")
     st.dataframe(df_filtrado[['codigo_producto', 'nombre_producto', 'categoria', 'cantidad_sistema', 'cantidad_fisica', 'diferencia', 'estado']], use_container_width=True)
+    
+    # Botón de descarga para auditoría
+    st.markdown("---")
+    st.download_button(
+        label="📥 Descargar Auditoría Completa (CSV)",
+        data=df_filtrado.to_csv(index=False).encode('utf-8'),
+        file_name='auditoria_stock.csv',
+        mime='text/csv',
+        use_container_width=True
+    )
 
 # --- PESTAÑA 3: RADAR FIFO ---
 with tab_fifo:
@@ -199,6 +228,16 @@ with tab_fifo:
         
         st.subheader("Lotes Prioritarios para Promoción o Baja")
         st.dataframe(df_venc[['codigo_producto', 'nombre_producto', 'numero_lote', 'fecha_vencimiento', 'dias_para_vencer', 'cantidad_actual', 'valor_lote']], use_container_width=True)
+        
+        # Botón de descarga para FIFO
+        st.markdown("---")
+        st.download_button(
+            label="📥 Descargar Lotes en Riesgo (CSV)",
+            data=df_venc.to_csv(index=False).encode('utf-8'),
+            file_name='lotes_vencimiento.csv',
+            mime='text/csv',
+            use_container_width=True
+        )
     else:
         st.success(f"✅ No hay lotes próximos a vencer en los próximos {dias_filtro} días.")
 

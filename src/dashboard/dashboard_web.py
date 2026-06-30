@@ -2,9 +2,12 @@ import streamlit as st
 import pandas as pd
 import sqlite3
 import plotly.express as px
-from datetime import date
+import plotly.graph_objects as go
+from datetime import date, timedelta
 import os
 import io
+import numpy as np
+from scipy import stats
 
 # 1. CONFIGURACIÓN "ENTERPRISE" (Oculta menús de Streamlit)
 st.set_page_config(
@@ -56,6 +59,69 @@ footer {visibility: hidden;}
 </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
+# ============================================
+# FUNCIONES DE ANÁLISIS AVANZADO
+# ============================================
+
+def predecir_vencimientos(df_fifo, dias_futuros=30):
+    """Predice vencimientos futuros basados en tendencia histórica"""
+    df_venc = df_fifo[df_fifo['dias_para_vencer'] >= 0].copy()
+    
+    # Agrupar por días
+    venc_por_dia = df_venc.groupby('dias_para_vencer').size().reset_index(name='cantidad')
+    
+    # Calcular media móvil
+    venc_por_dia['media_movil_7d'] = venc_por_dia['cantidad'].rolling(window=7, min_periods=1).mean()
+    
+    return venc_por_dia
+
+def calcular_top_problematicos(df_comp, top_n=10):
+    """Calcula los top N productos con más problemas"""
+    df_problemas = df_comp[df_comp['diferencia'] != 0].copy()
+    
+    # Si existe la columna precio_venta, usarla. Si no, usar 1
+    if 'precio_venta' in df_problemas.columns:
+        df_problemas['valor_diferencia'] = abs(df_problemas['diferencia']) * df_problemas['precio_venta']
+    else:
+        df_problemas['valor_diferencia'] = abs(df_problemas['diferencia'])
+    
+    top_productos = df_problemas.groupby('nombre_producto').agg({
+        'diferencia': 'sum',
+        'valor_diferencia': 'sum',
+        'codigo_producto': 'count'
+    }).round(2).reset_index()
+    
+    top_productos.columns = ['Producto', 'Diferencia Total', 'Valor Perdido', 'Frecuencia']
+    top_productos = top_productos.sort_values('Valor Perdido', ascending=False).head(top_n)
+    
+    return top_productos
+
+def calcular_kpis_avanzados(df_comp, df_fifo):
+    """Calcula KPIs avanzados de inventario"""
+    kpis = {}
+    
+    # Giro de inventario (simplificado)
+    total_productos = len(df_comp)
+    productos_con_movimiento = len(df_comp[df_comp['diferencia'] != 0])
+    kpis['giro_inventario'] = (productos_con_movimiento / total_productos * 100) if total_productos > 0 else 0
+    
+    # Tasa de obsolescencia
+    productos_vencidos = len(df_fifo[df_fifo['dias_para_vencer'] < 0])
+    total_lotes = len(df_fifo)
+    kpis['tasa_obsolescencia'] = (productos_vencidos / total_lotes * 100) if total_lotes > 0 else 0
+    
+    # Valor promedio por producto
+    if 'valor_lote' in df_fifo.columns:
+        kpis['valor_promedio_producto'] = df_fifo['valor_lote'].mean()
+    else:
+        kpis['valor_promedio_producto'] = 0
+    
+    return kpis
+
+# ============================================
+# FIN DE FUNCIONES DE ANÁLISIS AVANZADO
+# ============================================
 
 # CARGA DE DATOS (Optimizada)
 @st.cache_data
@@ -121,10 +187,11 @@ if cat_sel != 'Todas': df_filtrado = df_filtrado[df_filtrado['categoria'] == cat
 if estado_sel != 'Todos': df_filtrado = df_filtrado[df_filtrado['estado'] == estado_sel]
 
 # 4. PESTAÑAS EJECUTIVAS (Tabs)
-tab_resumen, tab_auditoria, tab_fifo = st.tabs([
+tab_resumen, tab_auditoria, tab_fifo, tab_analise = st.tabs([
     "📊 Resumen Ejecutivo", 
     "🔍 Auditoría de Stock (Sistema vs Físico)", 
-    " Radar de Vencimientos (FIFO)"
+    "📅 Radar de Vencimientos (FIFO)",
+    "📈 Análisis Avanzado"
 ])
 
 # --- PESTAÑA 1: RESUMEN EJECUTIVO ---
@@ -136,7 +203,7 @@ with tab_resumen:
     correctos = len(df_filtrado[df_filtrado['estado'] == 'Correcto'])
     criticos = len(df_filtrado[df_filtrado['estado'] == 'Critico'])
     tasa = (correctos/total*100) if total > 0 else 0
-    valor_inv = df_fifo['valor_lote'].sum()
+    valor_inv = df_fifo['valor_lote'].sum() if 'valor_lote' in df_fifo.columns else 0
     
     with col1:
         st.metric("Precisión de Inventario", f"{tasa:.1f}%", delta=f"{tasa - 80:.1f}% vs Meta")
@@ -160,12 +227,13 @@ with tab_resumen:
 
     with col_g2:
         st.subheader("Impacto Financiero por Categoría")
-        df_valor_cat = df_fifo.groupby('categoria')['valor_lote'].sum().reset_index()
-        fig_cat = px.bar(df_valor_cat, x='categoria', y='valor_lote', color='categoria',
-                         color_discrete_sequence=['#065f46', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0'],
-                         labels={'categoria': 'Categoría', 'valor_lote': 'Valor (R$)'})
-        fig_cat.update_layout(showlegend=False)
-        st.plotly_chart(fig_cat, use_container_width=True)
+        df_valor_cat = df_fifo.groupby('categoria')['valor_lote'].sum().reset_index() if 'valor_lote' in df_fifo.columns else pd.DataFrame()
+        if not df_valor_cat.empty:
+            fig_cat = px.bar(df_valor_cat, x='categoria', y='valor_lote', color='categoria',
+                             color_discrete_sequence=['#065f46', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0'],
+                             labels={'categoria': 'Categoría', 'valor_lote': 'Valor (R$)'})
+            fig_cat.update_layout(showlegend=False)
+            st.plotly_chart(fig_cat, use_container_width=True)
     
     # Botones de descarga para resumen
     st.markdown("---")
@@ -192,6 +260,45 @@ with tab_resumen:
             mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             use_container_width=True
         )
+    
+    # NUEVA SECCIÓN: Análisis Predictivo
+    st.markdown("---")
+    st.subheader("📈 Análisis Predictivo")
+    
+    col_pred1, col_pred2 = st.columns(2)
+    
+    with col_pred1:
+        st.markdown("#### Tendencia de Vencimientos")
+        df_prediccion = predecir_vencimientos(df_fifo, dias_filtro)
+        
+        if not df_prediccion.empty:
+            fig_tendencia = px.line(
+                df_prediccion.head(30),
+                x='dias_para_vencer',
+                y='media_movil_7d',
+                title='Vencimientos Próximos (Media Móvil 7 días)',
+                labels={'dias_para_vencer': 'Días', 'media_movil_7d': 'Cantidad de Productos'}
+            )
+            fig_tendencia.update_traces(line=dict(color='#2563eb', width=3))
+            st.plotly_chart(fig_tendencia, use_container_width=True)
+    
+    with col_pred2:
+        st.markdown("#### Distribución por Tiempo")
+        df_temp = df_fifo[df_fifo['dias_para_vencer'] >= 0].copy()
+        if not df_temp.empty:
+            df_temp['periodo'] = pd.cut(
+                df_temp['dias_para_vencer'],
+                bins=[0, 7, 15, 30, 60, 90, float('inf')],
+                labels=['0-7 días', '8-15 días', '16-30 días', '31-60 días', '61-90 días', '+90 días']
+            )
+            
+            fig_periodo = px.pie(
+                df_temp,
+                names='periodo',
+                title='Distribución por Período de Vencimiento',
+                hole=0.4
+            )
+            st.plotly_chart(fig_periodo, use_container_width=True)
 
 # --- PESTAÑA 2: AUDITORÍA DE STOCK ---
 with tab_auditoria:
@@ -219,6 +326,37 @@ with tab_auditoria:
         mime='text/csv',
         use_container_width=True
     )
+    
+    # NUEVA SECCIÓN: Top Productos Problemáticos
+    st.markdown("---")
+    st.subheader("🔴 Top 10 Productos con Mayores Pérdidas")
+    
+    df_top = calcular_top_problematicos(df_filtrado, top_n=10)
+    
+    if not df_top.empty:
+        col_top1, col_top2 = st.columns(2)
+        
+        with col_top1:
+            fig_top_bar = px.bar(
+                df_top,
+                x='Valor Perdido',
+                y='Producto',
+                orientation='h',
+                title='Valor Perdido por Producto',
+                color='Valor Perdido',
+                color_continuous_scale='Reds'
+            )
+            fig_top_bar.update_layout(yaxis={'categoryorder': 'total ascending'})
+            st.plotly_chart(fig_top_bar, use_container_width=True)
+        
+        with col_top2:
+            st.dataframe(
+                df_top.style.format({'Valor Perdido': 'R$ {:,.2f}'})
+                .background_gradient(cmap='Reds', subset=['Valor Perdido']),
+                use_container_width=True
+            )
+    else:
+        st.success("¡Excelente! No hay productos con diferencias significativas.")
 
 # --- PESTAÑA 3: RADAR FIFO ---
 with tab_fifo:
@@ -247,6 +385,94 @@ with tab_fifo:
         )
     else:
         st.success(f"✅ No hay lotes próximos a vencer en los próximos {dias_filtro} días.")
+    
+    # NUEVA SECCIÓN: KPIs Avanzados
+    st.markdown("---")
+    st.subheader("📊 Indicadores Avanzados de Gestión")
+    
+    kpis = calcular_kpis_avanzados(df_comp, df_fifo)
+    
+    col_kpi1, col_kpi2, col_kpi3 = st.columns(3)
+    
+    with col_kpi1:
+        st.metric(
+            label="Giro de Inventario",
+            value=f"{kpis['giro_inventario']:.1f}%",
+            help="Porcentaje de productos con movimiento"
+        )
+    
+    with col_kpi2:
+        st.metric(
+            label="Tasa de Obsolescencia",
+            value=f"{kpis['tasa_obsolescencia']:.1f}%",
+            delta=f"{'⚠️' if kpis['tasa_obsolescencia'] > 5 else '✅'}",
+            help="Porcentaje de productos vencidos"
+        )
+    
+    with col_kpi3:
+        st.metric(
+            label="Valor Promedio por Lote",
+            value=f"R$ {kpis['valor_promedio_producto']:,.2f}",
+            help="Valor promedio de cada lote en inventario"
+        )
+
+# --- PESTAÑA 4: ANÁLISIS AVANZADO ---
+with tab_analise:
+    st.subheader("🎯 Análisis de Rentabilidad por Categoría")
+    
+    # Agrupar por categoría
+    if 'valor_lote' in df_fifo.columns:
+        df_cat = df_fifo.groupby('categoria').agg({
+            'valor_lote': ['sum', 'mean', 'count'],
+            'dias_para_vencer': 'mean'
+        }).round(2).reset_index()
+        
+        df_cat.columns = ['Categoria', 'Valor Total', 'Valor Promedio', 'Cantidad', 'Días Promedio Vencimiento']
+        df_cat = df_cat.sort_values('Valor Total', ascending=False)
+        
+        col_cat1, col_cat2 = st.columns(2)
+        
+        with col_cat1:
+            fig_cat_bar = px.bar(
+                df_cat,
+                x='Categoria',
+                y='Valor Total',
+                title='Valor Total en Inventario por Categoría',
+                color='Valor Total',
+                color_continuous_scale='Viridis'
+            )
+            st.plotly_chart(fig_cat_bar, use_container_width=True)
+        
+        with col_cat2:
+            st.dataframe(
+                df_cat.style.format({
+                    'Valor Total': 'R$ {:,.2f}',
+                    'Valor Promedio': 'R$ {:,.2f}',
+                    'Días Promedio Vencimiento': '{:.1f} días'
+                }),
+                use_container_width=True
+            )
+    else:
+        st.warning("No hay datos de valor de lote disponibles para el análisis.")
+    
+    # Heatmap de pérdidas por categoría
+    st.markdown("---")
+    st.subheader("🔥 Mapa de Calor: Pérdidas por Categoría")
+    
+    df_heat = df_comp[df_comp['diferencia'] != 0].groupby(['categoria', 'estado']).size().reset_index(name='cantidad')
+    
+    if not df_heat.empty:
+        fig_heat = px.density_heatmap(
+            df_heat,
+            x='categoria',
+            y='estado',
+            z='cantidad',
+            title='Distribución de Diferencias por Categoría y Estado',
+            color_continuous_scale='Reds'
+        )
+        st.plotly_chart(fig_heat, use_container_width=True)
+    else:
+        st.success("¡Excelente! No hay diferencias significativas por categoría.")
 
 # FOOTER CORPORATIVO
 st.markdown("---")

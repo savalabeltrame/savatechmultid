@@ -349,15 +349,12 @@ with tab_auditoria:
             fig_top_bar.update_layout(yaxis={'categoryorder': 'total ascending'})
             st.plotly_chart(fig_top_bar, use_container_width=True)
         
-        with col_top2:
-            st.dataframe(
-                df_top.style.format({'Valor Perdido': 'R$ {:,.2f}'})
-                .background_gradient(cmap='Reds', subset=['Valor Perdido']),
-                use_container_width=True
-            )
-    else:
-        st.success("¡Excelente! No hay productos con diferencias significativas.")
-
+    with col_top2:
+            # Formatear el dataframe sin usar style
+            df_top_formateado = df_top.copy()
+            df_top_formateado['Valor Perdido'] = df_top_formateado['Valor Perdido'].apply(lambda x: f'R$ {x:,.2f}')
+            
+ 
 # --- PESTAÑA 3: RADAR FIFO ---
 with tab_fifo:
     st.subheader(f"Radar de Vencimiento: Lotes que vencen en los próximos {dias_filtro} días")

@@ -3,6 +3,7 @@ import pandas as pd
 import sqlite3
 import plotly.express as px
 from datetime import date
+import os
 
 # 1. CONFIGURACIÓN "ENTERPRISE" (Oculta menús de Streamlit)
 st.set_page_config(
@@ -16,30 +17,29 @@ st.set_page_config(
     }
 )
 
-# CSS para ocultar el footer de Streamlit y dar estilo corporativo
+# CSS para ocultar el footer de Streamlit y dar estilo corporativo VERDE
 hide_streamlit_style = """
 <style>
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 .header-container {
-    background-color: #003366; /* Azul corporativo */
+    background: linear-gradient(135deg, #065f46 0%, #047857 100%);
     color: white;
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 12px;
     margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 .metric-card {
-    background-color: #f8f9fa;
+    background-color: #f0fdf4;
     padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    border: 2px solid #10b981;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
-# CARGA DE DATOS (Optimizada)
-import os
 
 # CARGA DE DATOS (Optimizada)
 @st.cache_data
@@ -73,9 +73,10 @@ def cargar_datos():
     df_fifo['valor_lote'] = df_fifo['cantidad_actual'] * df_fifo['costo_unitario']
     
     return df_comp, df_fifo
+
 df_comp, df_fifo = cargar_datos()
 
-# 2. HEADER CORPORATIVO
+# 2. HEADER CORPORATIVO VERDE
 st.markdown("""
 <div class="header-container">
     <h1 style="margin:0;">Savatech Dados ERP</h1>
@@ -133,12 +134,11 @@ with tab_resumen:
 
     st.markdown("---")
 
-    
     col_g1, col_g2 = st.columns(2)
     with col_g1:
         st.subheader("Salud del Inventario")
         fig_pie = px.pie(df_filtrado, names='estado', color='estado', 
-                         color_discrete_map={'Correcto': '#28a745', 'Diferencia': '#ffc107', 'Critico': '#dc3545'},
+                         color_discrete_map={'Correcto': '#10b981', 'Diferencia': '#f59e0b', 'Critico': '#dc2626'},
                          hole=0.5)
         fig_pie.update_layout(showlegend=False)
         st.plotly_chart(fig_pie, use_container_width=True)
@@ -147,6 +147,7 @@ with tab_resumen:
         st.subheader("Impacto Financiero por Categoría")
         df_valor_cat = df_fifo.groupby('categoria')['valor_lote'].sum().reset_index()
         fig_cat = px.bar(df_valor_cat, x='categoria', y='valor_lote', color='categoria',
+                         color_discrete_sequence=['#065f46', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0'],
                          labels={'categoria': 'Categoría', 'valor_lote': 'Valor (R$)'})
         fig_cat.update_layout(showlegend=False)
         st.plotly_chart(fig_cat, use_container_width=True)
@@ -159,7 +160,7 @@ with tab_auditoria:
     df_diff = df_filtrado[df_filtrado['diferencia'] != 0]
     if not df_diff.empty:
         fig_bar = px.bar(df_diff, x='nombre_producto', y='diferencia', color='estado',
-                        color_discrete_map={'Diferencia': '#ffc107', 'Critico': '#dc3545'},
+                        color_discrete_map={'Diferencia': '#f59e0b', 'Critico': '#dc2626'},
                         labels={'diferencia': 'Unidades de Diferencia'})
         st.plotly_chart(fig_bar, use_container_width=True)
     else:
@@ -176,7 +177,7 @@ with tab_fifo:
     
     if not df_venc.empty:
         fig_venc = px.bar(df_venc, x='nombre_producto', y='dias_para_vencer', color='dias_para_vencer',
-                         color_continuous_scale=['#28a745', '#ffc107', '#fd7e14', '#dc3545'],
+                         color_continuous_scale=['#065f46', '#10b981', '#f59e0b', '#dc2626'],
                          labels={'dias_para_vencer': 'Días restantes'},
                          hover_data=['numero_lote', 'cantidad_actual', 'fecha_vencimiento', 'valor_lote'])
         st.plotly_chart(fig_venc, use_container_width=True)
